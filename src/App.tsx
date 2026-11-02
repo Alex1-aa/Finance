@@ -16,6 +16,7 @@ import {
   Download,
   Edit3,
   LayoutDashboard,
+  LogOut,
   Menu,
   MoreHorizontal,
   PiggyBank,
@@ -52,6 +53,7 @@ import {
   transactions as seedTransactions,
 } from './data'
 import type { Budget, SavingsGoal, Transaction, TransactionType } from './types'
+import { getInitials, type User } from './auth'
 
 type Page = 'dashboard' | 'transactions' | 'budgets' | 'goals' | 'settings'
 type Toast = { message: string; tone?: 'success' | 'neutral' }
@@ -103,7 +105,8 @@ const initialForm: FormState = {
   note: '',
 }
 
-function App() {
+function App({ user, onSignOut }: { user: User; onSignOut: () => void }) {
+  const initials = getInitials(user.name)
   const [page, setPage] = useState<Page>('dashboard')
   const [isMobileNavOpen, setMobileNavOpen] = useState(false)
   const [transactionList, setTransactionList] = useState<Transaction[]>(seedTransactions)
@@ -321,12 +324,19 @@ function App() {
             <span>Settings</span>
           </button>
           <div className="profile-row">
-            <div className="avatar">AM</div>
+            <div className="avatar">{initials}</div>
             <div className="profile-copy">
-              <strong>Alex Morgan</strong>
-              <span>Personal workspace</span>
+              <strong>{user.name}</strong>
+              <span>{user.email}</span>
             </div>
-            <MoreHorizontal size={16} className="muted-icon" />
+            <button
+              className="sign-out-button"
+              onClick={onSignOut}
+              aria-label="Sign out"
+              title="Sign out"
+            >
+              <LogOut size={15} />
+            </button>
           </div>
         </div>
       </aside>
@@ -357,13 +367,16 @@ function App() {
               <Bell size={17} />
               <span />
             </button>
-            <div className="top-avatar">AM</div>
+            <div className="top-avatar" title={user.name}>
+              {initials}
+            </div>
           </div>
         </header>
 
         <div className="page-content">
           {page === 'dashboard' && (
             <DashboardView
+              firstName={user.name.split(/\s+/)[0]}
               dashboardPeriodLabel={dashboardPeriodLabel}
               period={period}
               setPeriod={setPeriod}
@@ -413,7 +426,9 @@ function App() {
           {page === 'goals' && (
             <GoalsView goalList={goalList} setGoalList={setGoalList} showToast={showToast} />
           )}
-          {page === 'settings' && <SettingsView showToast={showToast} />}
+          {page === 'settings' && (
+            <SettingsView user={user} onSignOut={onSignOut} showToast={showToast} />
+          )}
         </div>
       </main>
 
@@ -438,6 +453,7 @@ function App() {
 }
 
 type DashboardProps = {
+  firstName: string
   dashboardPeriodLabel: string
   period: string
   setPeriod: (value: string) => void
@@ -456,6 +472,7 @@ type DashboardProps = {
 }
 
 function DashboardView({
+  firstName,
   dashboardPeriodLabel,
   period,
   setPeriod,
@@ -490,7 +507,8 @@ function DashboardView({
             TUESDAY, OCTOBER 21, 2026 <span className="eyebrow-line" />
           </div>
           <h1>
-            Good morning, Alex<span className="heading-period">.</span>
+            Good morning, {firstName}
+            <span className="heading-period">.</span>
           </h1>
           <p>Your spending has a shape. Here’s the clearest view of it.</p>
         </div>
@@ -1284,7 +1302,15 @@ function GoalsView({
   )
 }
 
-function SettingsView({ showToast }: { showToast: (message: string) => void }) {
+function SettingsView({
+  user,
+  onSignOut,
+  showToast,
+}: {
+  user: User
+  onSignOut: () => void
+  showToast: (message: string) => void
+}) {
   return (
     <>
       <section className="page-heading">
@@ -1303,10 +1329,10 @@ function SettingsView({ showToast }: { showToast: (message: string) => void }) {
           <div className="panel-kicker">PROFILE</div>
           <h2>Personal workspace</h2>
           <div className="profile-large">
-            <div className="profile-large-avatar">AM</div>
+            <div className="profile-large-avatar">{getInitials(user.name)}</div>
             <div>
-              <strong>Alex Morgan</strong>
-              <span>alex.morgan@example.com</span>
+              <strong>{user.name}</strong>
+              <span>{user.email}</span>
             </div>
             <button
               className="secondary-button small-button"
@@ -1318,7 +1344,7 @@ function SettingsView({ showToast }: { showToast: (message: string) => void }) {
           <div className="settings-field">
             <label>
               Workspace name
-              <input defaultValue="Alex's personal finances" />
+              <input defaultValue={`${user.name.split(/\s+/)[0]}'s personal finances`} />
             </label>
             <label>
               Base currency
@@ -1329,6 +1355,9 @@ function SettingsView({ showToast }: { showToast: (message: string) => void }) {
               </select>
             </label>
           </div>
+          <button className="secondary-button settings-sign-out" onClick={onSignOut}>
+            <LogOut size={14} /> Sign out
+          </button>
         </div>
         <div className="panel settings-panel">
           <div className="panel-kicker">PREFERENCES</div>
