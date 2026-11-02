@@ -47,7 +47,7 @@ function AuthLayout({ children }: { children: ReactNode }) {
             <span />
           </div>
           <div>
-            <span className="brand-name">Alex</span>
+            <span className="brand-name">Personal Finance</span>
             <span className="brand-tag">money, made legible.</span>
           </div>
         </div>

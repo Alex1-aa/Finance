@@ -288,7 +288,7 @@ function App({ user, onSignOut }: { user: User; onSignOut: () => void }) {
             <span />
           </div>
           <div>
-            <span className="brand-name">Alex</span>
+            <span className="brand-name">Personal Finance</span>
             <span className="brand-tag">money, made legible.</span>
           </div>
         </div>
@@ -1321,7 +1321,7 @@ function SettingsView({
           <h1>
             Settings<span className="heading-period">.</span>
           </h1>
-          <p>Make Alex fit the way you think about money.</p>
+          <p>Make Personal Finance fit the way you think about money.</p>
         </div>
       </section>
       <section className="settings-grid">
@@ -1361,7 +1361,7 @@ function SettingsView({
         </div>
         <div className="panel settings-panel">
           <div className="panel-kicker">PREFERENCES</div>
-          <h2>How Alex speaks</h2>
+          <h2>How Personal Finance speaks</h2>
           <div className="toggle-row">
             <div>
               <strong>Budget threshold alerts</strong>
